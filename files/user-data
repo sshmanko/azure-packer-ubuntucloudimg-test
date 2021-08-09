@@ -1,0 +1,32 @@
+#cloud-config
+disable_root: true
+preserve_hostname: false
+ssh_pwauth: true
+users:
+  - name: rf
+    homedir: /home/rf
+    lock_passwd: false
+    hashed_passwd: $6$rounds=4096$E7/JlR1q.ku$1F2Lxcbv8jtPepJXUFLRUKpoubtZGgT4.iDtokZTdiio5axjLkW2pnQhbP40QKRWVFaIwxqvqKprlhdcjuj810
+    shell: /bin/bash
+ntp:
+  ntp_client: auto
+  enabled: true
+package_update: true
+package_upgrade: true
+packages:
+  - linux-cloud-tools-generic
+  - linux-tools-generic
+  - linux-generic
+  - whois
+package_reboot_if_required: false
+bootcmd:
+  - modprobe hv_balloon
+  - modprobe hv_utils
+  - modprobe hv_vmbus
+  - modprobe hv_sock
+  - modprobe hv_storvsc
+  - modprobe hv_netvsc
+  - sh -c 'echo "hv_balloon\nhv_utils\nhv_vmbus\nhv_sock\nhv_storvsc\nhv_netvsc" >>/etc/initramfs-tools/modules' && update-initramfs -k all -u
+
+runcmd:
+  - systemctl reboot
